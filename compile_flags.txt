@@ -1,0 +1,7 @@
+-I./include
+-I/usr/local/include
+-I/usr/X11R6/include
+-g
+-Wall
+-Wextra
+-std=gnu99
