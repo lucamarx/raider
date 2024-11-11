@@ -617,7 +617,7 @@ void preview_file_info(WINDOW* win, const Entry* entry) {
   mvwprintw(win, 3, 22, "Uid: (%i/%s) Gid: (%i/%s)", entry->info.st_uid, pws->pw_name, entry->info.st_gid, grp->gr_name);
 
   mvwprintw(win, 4, 1,  "Device: %i,%i", major(entry->info.st_dev), minor(entry->info.st_dev));
-  mvwprintw(win, 4, 22, "Inode: %lli", entry->info.st_ino);
+  mvwprintw(win, 4, 22, "Inode: %lli", (unsigned long long int) entry->info.st_ino);
 
   mvwprintw(win, 5, 1,  "Access: %s", atime);
 

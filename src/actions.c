@@ -179,7 +179,7 @@ void action_goto_path(const char* path) {
   else if (N > 0) {
     strlcpy(CURRENT_DIR, dir_part, sizeof(CURRENT_DIR));
 
-    int l, c;
+    int l, c __attribute__((unused));
     getmaxyx(WLFT, l, c);
 
     dflt.pos       = 0;
@@ -242,7 +242,7 @@ void action_down(bool update_preview) {
 
 
 void action_page_up(bool update_preview) {
-  int l, c;
+  int l, c __attribute__((unused));
 
   getmaxyx(WLFT, l, c);
   move_pos_by(-(l/2));
@@ -254,7 +254,7 @@ void action_page_up(bool update_preview) {
 
 
 void action_page_down(bool update_preview) {
-  int l, c;
+  int l, c __attribute__((unused));
 
   getmaxyx(WLFT, l, c);
   move_pos_by(l/2);
