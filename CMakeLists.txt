@@ -5,7 +5,7 @@ cmake_minimum_required(VERSION 3.30)
 
 project(raider C)
 
-add_compile_options(-g -O3 -Wall -Wextra -std=c99)
+add_compile_options(-g -O3 -Wall -Wextra -std=gnu99)
 
 add_executable(raider
   src/actions.c
