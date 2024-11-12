@@ -467,10 +467,13 @@ void action_fzf_search() {
     fgetline(sizeof(path), path, p);
     pclose(p);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wformat-truncation"
     if (strlen(CURRENT_DIR) == 1)
       snprintf(full_path, sizeof(full_path), "%s%s", CURRENT_DIR, path);
     else
       snprintf(full_path, sizeof(full_path), "%s/%s", CURRENT_DIR, path);
+#pragma GCC diagnostic pop
 
     init_curses();
 

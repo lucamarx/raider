@@ -179,7 +179,7 @@ void escape_quote(size_t escsz, char esc[escsz], const char* buf) {
 
 void get_size_line(size_t sizesz, char size[sizesz], const Entry* entry) {
   if (entry->info.st_size < 1e3) {
-    snprintf(size, sizesz, "%lliB", entry->info.st_size);
+    snprintf(size, sizesz, "%lliB", (unsigned long long int) entry->info.st_size);
   }
   else if (entry->info.st_size < 1e6) {
     double sz = entry->info.st_size / 1000.0;
