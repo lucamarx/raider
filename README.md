@@ -56,8 +56,8 @@ There are a few preview options, they are selected with the `-p` option:
 - `x11`: if you are using X and have the W3M text browser (and `w3mimgdisplay`)
   installed raider will use it to display images in you terminal
 
-- `sixel`: if your terminal supports displaying sixel images, see
-  [https://www.arewesixelyet.com/](are we sixel yet?), and you have
+- `sixel`: if your terminal supports displaying sixel images (see
+  [are we sixel yet?](https://www.arewesixelyet.com/)) and you have
   [libsixel](https://github.com/saitoha/libsixel) installed raider will try to
   display images directly on the terminal (this works also in ssh)
 
