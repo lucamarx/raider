@@ -21,8 +21,8 @@ To compile just do
 
 then just copy the `raider` executable to a directory in your PATH.
 
-There are no specific dependencies, preview try to use whatever is available on
-your system.
+There are no specific dependencies, for previewing files it tries to use
+whatever is available on your system.
 
 # Usage
 
@@ -33,7 +33,7 @@ You can navigate with the cursor arrows or the `hjkl` keys
 
 - `s` drops you into a shell in the current directory
 - `e` opens the current file/directory in an editor (vim or emacs depending on
-  what's avaliable)
+  what's available)
 - `tT` sorts directory by *ctime* (ascending/descending)
 - `nN` sorts directory by *name* (ascending/descending)
 - `sS` sorts directory by *size* (ascending/descending)
@@ -56,8 +56,8 @@ There are a few preview options, they are selected with the `-p` option:
 - `x11`: if you are using X and have the W3M text browser (and `w3mimgdisplay`)
   installed raider will use it to display images in you terminal
 
-- `sixel`: if your terminal supports displaying sixel images (see
-  [https://www.arewesixelyet.com/](are we sixel yet?)) and you have
+- `sixel`: if your terminal supports displaying sixel images, see
+  [https://www.arewesixelyet.com/](are we sixel yet?), and you have
   [libsixel](https://github.com/saitoha/libsixel) installed raider will try to
   display images directly on the terminal (this works also in ssh)
 
@@ -67,7 +67,7 @@ There are a few preview options, they are selected with the `-p` option:
 - `none`: no preview, try to convert file to text
 
 Note that if you have xterm and you want to view sixel images probably you'll
-have to add the following lines to yout `.Xresources` file:
+have to add the following lines to your `.Xresources` file:
 
     xterm*decTerminalID:     vt340
     xterm*sixelScrolling:    1
@@ -75,3 +75,8 @@ have to add the following lines to yout `.Xresources` file:
     xterm*numColorRegisters: 256
 
 also for reason still not entirely clear to me sixel preview work best in tmux.
+
+
+Document preview needs
+[ImageMagick](https://github.com/ImageMagick/ImageMagick), video preview needs
+[ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer).
