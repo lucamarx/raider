@@ -427,8 +427,6 @@ void action_open_editor(void) {
   const Entry* current = &ENTRIES[STATE->pos];
 
   if (S_ISDIR(current->info.st_mode)) {
-    endwin();
-
     if (CONFIG->has_emacsclient)
       suspend_exec_resume(CURRENT_DIR, "emacsclient -nw .", "cannot open editor here");
     else if (CONFIG->has_vim)
