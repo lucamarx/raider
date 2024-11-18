@@ -508,8 +508,8 @@ void preview_file(const Preview* preview, WINDOW* win, const Entry* entry) {
              sizeof(cache_path),
              "%s/.cache/raider/%i-%llu.%s",
              getenv("HOME"),
-             entry->info.st_dev,
-             entry->info.st_ino,
+             (int) entry->info.st_dev,
+             (unsigned long long int) entry->info.st_ino,
              preview->mode == sixel ? "six" : "jpg");
 
     if (path_exists(cache_path)) {

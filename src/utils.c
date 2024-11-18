@@ -232,7 +232,7 @@ void update_titlebar(void) {
 
   snprintf(cmd, sizeof(cmd), "echo -n '%c]0;raider: %s [%i]%c'", '\033', dir, getpid(), '\007');
 
-  system(cmd);
+  int r __attribute__((unused)) = system(cmd);
 }
 
 

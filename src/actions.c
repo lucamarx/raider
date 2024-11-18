@@ -341,11 +341,10 @@ void action_backward(void) {
     if (path[i-1] == '/') {
       path[i == 1 ? 1 : i-1] = '\0';
       rest = &path[i == 1 ? 2 : i];
+      action_goto(path, rest);
       break;
     }
   }
-
-  action_goto(path, rest);
 }
 
 
