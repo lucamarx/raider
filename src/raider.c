@@ -69,7 +69,7 @@ void config_init(Config* config) {
 }
 
 
-void help() {
+void help(void) {
   char modes[32];
   preview_get_modes(PREVIEW, sizeof(modes), modes);
 

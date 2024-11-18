@@ -265,7 +265,7 @@ void action_page_down(bool update_preview) {
 }
 
 
-void action_home() {
+void action_home(void) {
   move_pos_to(0);
 
   display_update_lft();
@@ -274,7 +274,7 @@ void action_home() {
 }
 
 
-void action_end() {
+void action_end(void) {
   move_pos_to(STATE->files_n-1);
 
   display_update_lft();
@@ -283,7 +283,7 @@ void action_end() {
 }
 
 
-void action_forward() {
+void action_forward(void) {
   const Entry* current = &ENTRIES[STATE->pos];
   char path[FILENAME_MAX+1];
 
@@ -311,7 +311,7 @@ void action_forward() {
 }
 
 
-void action_backward() {
+void action_backward(void) {
   char path[FILENAME_MAX+1];
 
   strlcpy(path, CURRENT_DIR, sizeof(path));
@@ -378,7 +378,7 @@ void action_select(void){
 }
 
 
-void action_show_info() {
+void action_show_info(void) {
   if (STATE->files_n == 0) return;
 
   preview_clear(PREVIEW, WRGT);
@@ -387,7 +387,7 @@ void action_show_info() {
 }
 
 
-void action_open_shell() {
+void action_open_shell(void) {
   selection_save();
 
   char cmd[128] = "";
@@ -406,7 +406,7 @@ void action_open_shell() {
 }
 
 
-void action_open_editor() {
+void action_open_editor(void) {
   if (!CONFIG->has_emacsclient && !CONFIG->has_vim) return;
 
   const Entry* current = &ENTRIES[STATE->pos];
@@ -448,7 +448,7 @@ void action_open_editor() {
 }
 
 
-void action_fzf_search() {
+void action_fzf_search(void) {
   if (!CONFIG->has_fzf || (!CONFIG->has_fd && !CONFIG->has_find)) return;
 
   char cmd[32];
@@ -468,6 +468,7 @@ void action_fzf_search() {
     pclose(p);
 
 #pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunknown-warning-option"
 #pragma GCC diagnostic ignored "-Wformat-truncation"
     if (strlen(CURRENT_DIR) == 1)
       snprintf(full_path, sizeof(full_path), "%s%s", CURRENT_DIR, path);

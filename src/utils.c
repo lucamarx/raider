@@ -224,7 +224,7 @@ void get_time_line(size_t timesz, char time[timesz], const time_t t) {
 }
 
 
-void update_titlebar() {
+void update_titlebar(void) {
   char dir[FILENAME_MAX+1];
   char cmd[FILENAME_MAX+64];
 
@@ -243,7 +243,7 @@ void* write_selected(BTKey k __attribute__((unused)), void* val, void* ctx) {
 }
 
 
-void selection_save() {
+void selection_save(void) {
   char path[FILENAME_MAX+1];
   snprintf(path, sizeof(path), "%s/.raider-sel-%i", getenv("HOME"), getpid());
 
@@ -272,7 +272,7 @@ void selection_purge(void) {
   selection_save();
 }
 
-void selection_remove_file() {
+void selection_remove_file(void) {
   char path[FILENAME_MAX+1];
   snprintf(path, sizeof(path), "%s/.raider-sel-%i", getenv("HOME"), getpid());
 
