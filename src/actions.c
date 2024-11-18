@@ -126,30 +126,7 @@ void action_resize_window(void) {
 }
 
 
-void action_goto_path(const char* path) {
-  char dir_part[FILENAME_MAX+1];
-  char file_part[MAXNAMLEN+1];
-
-  int res = path_split_parts(dir_part, file_part, path);
-
-  if (res < 0) {
-    werase(WLFT);
-
-    wattron(WLFT, COLOR_PAIR(PAIR_RED_BLACK) | A_BOLD);
-    waddstr(WLFT, "  [Invalid Path]");
-    wattroff(WLFT, COLOR_PAIR(PAIR_RED_BLACK) | A_BOLD);
-
-    wrefresh(WLFT);
-
-    werase(WRGT);
-    wrefresh(WRGT);
-
-    werase(WBOT);
-    wrefresh(WBOT);
-
-    return;
-  }
-
+void action_goto(const char* dir_part, const char* file_part) {
   int N = list_dir(dir_part);
 
   State dflt;
@@ -225,6 +202,34 @@ void action_goto_path(const char* path) {
 
     update_titlebar();
   }
+}
+
+
+void action_goto_path(const char* path) {
+  char dir_part[FILENAME_MAX+1];
+  char file_part[MAXNAMLEN+1];
+
+  int res = path_split_parts(dir_part, file_part, path);
+
+  if (res < 0) {
+    werase(WLFT);
+
+    wattron(WLFT, COLOR_PAIR(PAIR_RED_BLACK) | A_BOLD);
+    waddstr(WLFT, "  [Invalid Path]");
+    wattroff(WLFT, COLOR_PAIR(PAIR_RED_BLACK) | A_BOLD);
+
+    wrefresh(WLFT);
+
+    werase(WRGT);
+    wrefresh(WRGT);
+
+    werase(WBOT);
+    wrefresh(WBOT);
+
+    return;
+  }
+
+  action_goto(dir_part, file_part);
 }
 
 
@@ -330,17 +335,18 @@ void action_forward(void) {
 
 void action_backward(void) {
   char path[FILENAME_MAX+1];
-
+  char* rest;
   strlcpy(path, CURRENT_DIR, sizeof(path));
 
   for (size_t i = strlen(path); i > 0; i--) {
     if (path[i-1] == '/') {
       path[i == 1 ? 1 : i-1] = '\0';
+      rest = &path[i == 1 ? 2 : i];
       break;
     }
   }
 
-  action_goto_path(path);
+  action_goto(path, rest);
 }
 
 
