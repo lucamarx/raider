@@ -81,9 +81,8 @@ void preview_clear_x11(const void* preview, WINDOW* win) {
   snprintf(cmd, sizeof(cmd),
            "echo -e '6;%i;%i;%i;%i;\n4;\n3;\n' | %s 2>&1 > /dev/null",
            x, y, max_w, max_h, ((const Preview*) preview)->w3mimgdisplay_path);
-  system(cmd);
 
-  PREVIEW_NEEDS_CLEARING = false;
+  if (system(cmd) == 0) PREVIEW_NEEDS_CLEARING = false;
 }
 
 
@@ -162,9 +161,7 @@ void preview_display_x11(const void* preview, WINDOW* win, const char* path) {
              "echo -e '6;%i;%i;%i;%i;\n0;1;%i;%i;%i;%i;;;%i;%i;%s\n4;\n3;\n' | %s 2>&1 > /dev/null",
              x, y, max_w, max_h, x, y, w, h , sw, sh, esc_path, ((const Preview*) preview)->w3mimgdisplay_path);
 
-    system(cmd);
-
-    PREVIEW_NEEDS_CLEARING = true;
+    if (system(cmd) == 0) PREVIEW_NEEDS_CLEARING = true;
   }
 }
 
@@ -309,7 +306,7 @@ void thumbnailer_video(const void* preview __attribute__((unused)), const char* 
            "(2>/dev/null 1>&2 ffmpegthumbnailer -i '%s' -s 0 -q 2 -o %s && kill -HUP %i) &",
            esc_path, cache_path, getpid());
 
-  system(cmd);
+  int r __attribute__((unused)) = system(cmd);
 }
 
 
@@ -322,7 +319,7 @@ void thumbnailer_document(const void* preview __attribute__((unused)), const cha
            "(2>/dev/null 1>&2 convert -density 120 '%s[0]' -quality 80 %s && kill -HUP %i) &",
            esc_path, cache_path, getpid());
 
-  system(cmd);
+  int r __attribute__((unused)) = system(cmd);
 }
 
 
@@ -335,7 +332,7 @@ void thumbnailer_image_sixel(const void* preview __attribute__((unused)), const 
            "(2>/dev/null img2sixel '%s' -w 300 > %s && kill -HUP %i) &",
            esc_path, cache_path, getpid());
 
-  system(cmd);
+  int r __attribute__((unused)) = system(cmd);
 }
 
 
@@ -348,7 +345,7 @@ void thumbnailer_video_sixel(const void* preview __attribute__((unused)), const 
            "(2>/dev/null 1>&2 ffmpegthumbnailer -i '%s' -s 0 -q 2 -o %s.jpg && 2>/dev/null img2sixel %s.jpg -w 300 > %s && kill -HUP %i) &",
            esc_path, cache_path, cache_path, cache_path, getpid());
 
-  system(cmd);
+  int r __attribute__((unused)) = system(cmd);
 }
 
 
@@ -361,7 +358,7 @@ void thumbnailer_document_sixel(const void* preview __attribute__((unused)), con
            "(2>/dev/null 1>&2 convert -density 120 '%s[0]' -quality 80 %s.jpg && 2>/dev/null img2sixel %s.jpg -w 300 > %s && kill -HUP %i) &",
            esc_path, cache_path, cache_path, cache_path, getpid());
 
-  system(cmd);
+  int r __attribute__((unused)) = system(cmd);
 }
 
 
