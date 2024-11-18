@@ -149,3 +149,16 @@ void display_update_rgt(bool update_preview) {
 
   wrefresh(WRGT);
 }
+
+
+void display_error(const char* error) {
+  int lines __attribute__((unused)), cols;
+
+  getmaxyx(WBOT, lines, cols);
+
+  wattron(WBOT, COLOR_PAIR(PAIR_RED_BLACK) | A_BOLD);
+  mvwprintw(WBOT, 0, cols - strlen(error),  "%s", error);
+  wattroff(WBOT, COLOR_PAIR(PAIR_RED_BLACK) | A_BOLD);
+
+  wrefresh(WBOT);
+}

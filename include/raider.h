@@ -148,6 +148,7 @@ void display_update_top(void);
 void display_update_bot(void);
 void display_update_lft(void);
 void display_update_rgt(bool update_preview);
+void display_error(const char* error);
 
 // initialize preview based on available stuff
 void preview_init(Preview* preview);
