@@ -458,18 +458,17 @@ void action_fzf_search(void) {
 
   endwin();
 
-  chdir(CURRENT_DIR);
-
   FILE* p;
   char path[FILENAME_MAX+1];
   char full_path[FILENAME_MAX+1];
-  if ((p = popen(cmd, "r"))) {
+  if (chdir(CURRENT_DIR) == 0 && (p = popen(cmd, "r")) != NULL) {
     fgetline(sizeof(path), path, p);
     pclose(p);
 
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunknown-warning-option"
+#ifndef __clang__
 #pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif
     if (strlen(CURRENT_DIR) == 1)
       snprintf(full_path, sizeof(full_path), "%s%s", CURRENT_DIR, path);
     else
