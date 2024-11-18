@@ -329,7 +329,7 @@ void thumbnailer_image_sixel(const void* preview __attribute__((unused)), const 
 
   char cmd[2*FILENAME_MAX+128];
   snprintf(cmd, sizeof(cmd),
-           "(2>/dev/null img2sixel '%s' -w 300 > %s && kill -HUP %i) &",
+           "(2>/dev/null img2sixel '%s' -q low -w 400 -o %s && kill -HUP %i) &",
            esc_path, cache_path, getpid());
 
   int r __attribute__((unused)) = system(cmd);
@@ -342,7 +342,7 @@ void thumbnailer_video_sixel(const void* preview __attribute__((unused)), const 
 
   char cmd[4*FILENAME_MAX+128];
   snprintf(cmd, sizeof(cmd),
-           "(2>/dev/null 1>&2 ffmpegthumbnailer -i '%s' -s 0 -q 2 -o %s.jpg && 2>/dev/null img2sixel %s.jpg -w 300 > %s && kill -HUP %i) &",
+           "(2>/dev/null 1>&2 ffmpegthumbnailer -i '%s' -s 0 -q 2 -o %s.jpg && 2>/dev/null img2sixel %s.jpg -q low -w 400 -o %s && kill -HUP %i) &",
            esc_path, cache_path, cache_path, cache_path, getpid());
 
   int r __attribute__((unused)) = system(cmd);
@@ -355,7 +355,7 @@ void thumbnailer_document_sixel(const void* preview __attribute__((unused)), con
 
   char cmd[4*FILENAME_MAX+128];
   snprintf(cmd, sizeof(cmd),
-           "(2>/dev/null 1>&2 convert -density 120 '%s[0]' -quality 80 %s.jpg && 2>/dev/null img2sixel %s.jpg -w 300 > %s && kill -HUP %i) &",
+           "(2>/dev/null 1>&2 convert -density 120 '%s[0]' -quality 80 %s.jpg && 2>/dev/null img2sixel %s.jpg -q low -w 400 -o %s && kill -HUP %i) &",
            esc_path, cache_path, cache_path, cache_path, getpid());
 
   int r __attribute__((unused)) = system(cmd);
