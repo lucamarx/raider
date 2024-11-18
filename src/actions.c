@@ -129,7 +129,6 @@ void action_resize_window(void) {
 void action_goto(const char* dir_part, const char* file_part) {
   int N = list_dir(dir_part);
 
-  State dflt;
   if (N < 0) {
     werase(WLFT);
 
@@ -148,11 +147,13 @@ void action_goto(const char* dir_part, const char* file_part) {
   else if (N == 0) {
     strlcpy(CURRENT_DIR, dir_part, sizeof(CURRENT_DIR));
 
-    dflt.pos       = 0;
-    dflt.start_pos = 0;
-    dflt.end_pos   = 0;
-    dflt.files_n   = 0;
-    dflt.order     = 'n';
+    State dflt = {
+      .pos       = 0,
+      .start_pos = 0,
+      .end_pos   = 0,
+      .files_n   = 0,
+      .order     = 'n'
+    };
 
     STATE = fix_directory_state(CURRENT_DIR, dflt);
 
@@ -176,11 +177,13 @@ void action_goto(const char* dir_part, const char* file_part) {
     int l, c __attribute__((unused));
     getmaxyx(WLFT, l, c);
 
-    dflt.pos       = 0;
-    dflt.start_pos = 0;
-    dflt.end_pos   = (N > l) ? (l-1) : (N-1);
-    dflt.files_n   = N;
-    dflt.order     = 'n';
+    State dflt = {
+      .pos       = 0,
+      .start_pos = 0,
+      .end_pos   = (N > l) ? (l-1) : (N-1),
+      .files_n   = N,
+      .order     = 'n'
+    };
 
     STATE = fix_directory_state(CURRENT_DIR, dflt);
 
