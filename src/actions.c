@@ -95,6 +95,23 @@ void move_pos_to(size_t new_pos) {
 }
 
 
+static
+void suspend_exec_resume(const char* dir, const char* cmd) {
+  endwin();
+
+  int r = chdir(dir);
+
+  if (r == 0)
+    r = system(cmd);
+
+  init_curses();
+
+  action_goto_path(CURRENT_DIR);
+
+  // eventually display error
+}
+
+
 void action_resize_window(void) {
   endwin();
 
@@ -393,16 +410,9 @@ void action_open_shell(void) {
   char cmd[128] = "";
   snprintf(cmd, sizeof(cmd), "echo 'selected files are at ~/.raider-sel-%i'; %s", getpid(), getenv("SHELL"));
 
-  endwin();
-
-  chdir(CURRENT_DIR);
-  system(cmd);
+  suspend_exec_resume(CURRENT_DIR, cmd);
 
   selection_purge();
-
-  init_curses();
-
-  action_goto_path(CURRENT_DIR);
 }
 
 
@@ -414,15 +424,10 @@ void action_open_editor(void) {
   if (S_ISDIR(current->info.st_mode)) {
     endwin();
 
-    chdir(CURRENT_DIR);
-
     if (CONFIG->has_emacsclient)
-      system("emacsclient -nw .");
+      suspend_exec_resume(CURRENT_DIR, "emacsclient -nw .");
     else if (CONFIG->has_vim)
-      system("vim .");
-
-    init_curses();
-    action_goto_path(CURRENT_DIR);
+      suspend_exec_resume(CURRENT_DIR, "vim .");
   }
   else if (S_ISREG(current->info.st_mode) && current->info.st_mode & S_IRUSR && current->type == text) {
     char path[MAXNAMLEN+1];
@@ -435,15 +440,7 @@ void action_open_editor(void) {
     else if (CONFIG->has_vim)
       snprintf(cmd, sizeof(cmd), "vim '%s'", path);
 
-    endwin();
-
-    chdir(CURRENT_DIR);
-
-    system(cmd);
-
-    init_curses();
-
-    action_goto_path(CURRENT_DIR);
+    suspend_exec_resume(CURRENT_DIR, cmd);
   }
 }
 
