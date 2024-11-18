@@ -324,10 +324,9 @@ void action_forward(void) {
 
     if (res == 0) {
       char cmd[FILENAME_MAX+64];
-
       snprintf(cmd, sizeof(cmd), "2>/dev/null 1>&2 xdg-open '%s' &", path);
 
-      system(cmd);
+      if (system(cmd) != 0) display_error("cannot open file");
     }
   }
 }
