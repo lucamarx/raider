@@ -7,6 +7,13 @@
 #include <ncurses.h>
 #include <sys/stat.h>
 
+#if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
+#include <sys/types.h>
+#include <sys/event.h>
+#include <sys/time.h>
+#define BSD_KQUEUE
+#endif
+
 #define RAIDER_VERSION "0.4.1"
 
 // color pairs
@@ -193,4 +200,11 @@ extern BTNode*  SELECTION;
 extern char     USER[256];
 extern char     HOST[256];
 extern char     CURRENT_DIR[FILENAME_MAX+1];
+
+#ifdef BSD_KQUEUE
+  extern int           KQ;
+  extern int           KQ_FD;
+  extern struct kevent KQ_CHANGE;
+#endif
+
 #endif

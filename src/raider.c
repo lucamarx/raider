@@ -25,6 +25,11 @@ char     HOST[256] = "";
 char     USER[256] = "";
 char     CURRENT_DIR[FILENAME_MAX+1] = "";
 
+#ifdef BSD_KQUEUE
+int           KQ;
+int           KQ_FD;
+struct kevent KQ_CHANGE;
+#endif
 
 void init_curses(void) {
   initscr();
@@ -82,6 +87,10 @@ void done(void) {
   endwin();
 
   selection_remove_file();
+
+#ifdef BSD_KQUEUE
+  if (KQ_FD != -1) close(KQ_FD);
+#endif
 
   if (SELECTION != NULL) btree_free(SELECTION);
   if (HISTORY != NULL) btree_free(HISTORY);
@@ -149,6 +158,15 @@ int main(int argc, char* argv[]) {
 
   if (preview_set_mode(PREVIEW, preview_mode) < 0)
     return EXIT_FAILURE;
+
+#ifdef BSD_KQUEUE
+  KQ = kqueue();
+  if (KQ == -1) {
+    fprintf(stderr, "cannot initialize kernel event queue\n");
+    return EXIT_FAILURE;
+  }
+  KQ_FD = -1;
+#endif
 
   CONFIG = (Config*) malloc(sizeof(Config));
   config_init(CONFIG);
