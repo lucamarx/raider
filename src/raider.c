@@ -73,9 +73,10 @@ void help(void) {
   char modes[32];
   preview_get_modes(PREVIEW, sizeof(modes), modes);
 
-  printf("usage: raider [-h] [-v] [-p preview mode] [-s file]\n");
-  printf("       where preview mode is one of:%s\n", modes);
+  printf("usage: raider [-h] [-v] [-p preview_qmode] [-s file]\n");
+  printf("       where preview_mode is one of:%s\n", modes);
 }
+
 
 void done(void) {
   endwin();
@@ -115,24 +116,39 @@ int main(int argc, char* argv[]) {
   while ((opt = getopt(argc, argv, "hvp:s:")) != -1) {
     if (opt == 'h') {
       help();
-      exit(EXIT_SUCCESS);
+      return EXIT_SUCCESS;
     }
     else if (opt == 'v') {
       printf("raider version %s\n", RAIDER_VERSION);
-      exit(EXIT_SUCCESS);
+      return EXIT_SUCCESS;
     }
-    else if (opt == 'p') strlcpy(preview_mode, optarg, sizeof(preview_mode));
-    else if (opt == 's') strlcpy(start_path, optarg, sizeof(start_path));
+    else if (opt == 'p')
+      strlcpy(preview_mode, optarg, sizeof(preview_mode));
+    else if (opt == 's') {
+      if (optarg[0] == '/')
+        strlcpy(start_path, optarg, sizeof(start_path));
+      else {
+        char cwd[FILENAME_MAX+1];
+        if (getcwd(cwd, sizeof(cwd)) == NULL) {
+          fprintf(stderr, "cannot get current directory\n");
+          return EXIT_FAILURE;
+        }
+        snprintf(start_path, sizeof(start_path), "%s/%s", cwd, optarg);
+      }
+    }
     else {
       help();
-      exit(EXIT_FAILURE);
+      return EXIT_FAILURE;
     }
   }
 
-  if (preview_set_mode(PREVIEW, preview_mode) < 0) {
-    free(PREVIEW);
-    exit(EXIT_FAILURE);
+  if (start_path[0] == '\0' && getcwd(start_path, sizeof(start_path)) == NULL) {
+    fprintf(stderr, "cannot get current directory\n");
+    return EXIT_FAILURE;
   }
+
+  if (preview_set_mode(PREVIEW, preview_mode) < 0)
+    return EXIT_FAILURE;
 
   CONFIG = (Config*) malloc(sizeof(Config));
   config_init(CONFIG);
@@ -143,24 +159,12 @@ int main(int argc, char* argv[]) {
   strlcpy(USER, getenv("USER"), sizeof(USER));
   gethostname(HOST, sizeof(HOST));
 
-  char path[FILENAME_MAX+1];
-
-  if (start_path[0] != '\0') {
-    if (start_path[0] == '/')
-      strlcpy(path, start_path, sizeof(path));
-    else {
-      char cwd[FILENAME_MAX];
-      snprintf(path, sizeof(path), "%s/%s", getcwd(cwd, FILENAME_MAX+1), start_path);
-    }
-  }
-  else getcwd(path, FILENAME_MAX);
-
   signal(SIGINT, sigint_handler);
   signal(SIGHUP, sighup_handler);
 
   init_curses();
 
-  action_goto_path(path);
+  action_goto_path(start_path);
 
   event_loop();
 
