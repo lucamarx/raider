@@ -31,6 +31,12 @@ int           KQ_FD;
 struct kevent KQ_CHANGE;
 #endif
 
+#ifdef LINUX_INOTIFY
+int           IN_FD;
+int           IN_WD;
+#endif
+
+
 void init_curses(void) {
   initscr();
   curs_set(0);
@@ -90,6 +96,11 @@ void done(void) {
 
 #ifdef BSD_KQUEUE
   if (KQ_FD != -1) close(KQ_FD);
+#endif
+
+#ifdef LINUX_INOTIFY
+  if (IN_WD != -1) inotify_rm_watch(IN_FD, IN_WD);
+  close(IN_FD);
 #endif
 
   if (SELECTION != NULL) btree_free(SELECTION);
@@ -166,6 +177,15 @@ int main(int argc, char* argv[]) {
     return EXIT_FAILURE;
   }
   KQ_FD = -1;
+#endif
+
+#ifdef LINUX_INOTIFY
+  IN_FD = inotify_init1(IN_NONBLOCK | IN_CLOEXEC);
+  if (IN_FD == -1) {
+    fprintf(stderr, "cannot initialize kernel event queue\n");
+    return EXIT_FAILURE;
+  }
+  IN_WD = -1;
 #endif
 
   CONFIG = (Config*) malloc(sizeof(Config));

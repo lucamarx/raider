@@ -14,6 +14,13 @@
 #define BSD_KQUEUE
 #endif
 
+#if defined(__linux__)
+#include <sys/inotify.h>
+#define LINUX_INOTIFY
+#define IN_EVENT_SIZE    (sizeof (struct inotify_event))
+#define IN_EVENT_BUF_LEN (1024 * (IN_EVENT_SIZE + 16))
+#endif
+
 #define RAIDER_VERSION "0.4.1"
 
 // color pairs
@@ -216,4 +223,8 @@ extern char     CURRENT_DIR[FILENAME_MAX+1];
   extern struct kevent KQ_CHANGE;
 #endif
 
+#ifdef LINUX_INOTIFY
+  extern int           IN_FD;
+  extern int           IN_WD;
+#endif
 #endif
