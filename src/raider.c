@@ -153,7 +153,12 @@ int main(int argc, char* argv[]) {
           fprintf(stderr, "cannot get current directory\n");
           return EXIT_FAILURE;
         }
+#pragma GCC diagnostic push
+#ifndef __clang__
+#pragma GCC diagnostic ignored "-Wformat-truncation"
+#endif
         snprintf(start_path, sizeof(start_path), "%s/%s", cwd, optarg);
+#pragma GCC diagnostic pop
       }
     }
     else {
