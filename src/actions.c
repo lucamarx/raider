@@ -127,6 +127,8 @@ void action_resize_window(void) {
 
 
 void action_goto(const char* dir_part, const char* file_part) {
+  events_unsubscribe();
+
   int N = list_dir(dir_part);
 
   if (N < 0) {
@@ -156,6 +158,8 @@ void action_goto(const char* dir_part, const char* file_part) {
     };
 
     STATE = fix_directory_state(CURRENT_DIR, dflt);
+
+    events_subscribe(CURRENT_DIR);
 
     display_update_top();
 
@@ -197,6 +201,8 @@ void action_goto(const char* dir_part, const char* file_part) {
           break;
         }
     }
+
+    events_subscribe(CURRENT_DIR);
 
     display_update_top();
     display_update_lft();

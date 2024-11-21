@@ -136,5 +136,7 @@ void event_loop(void) {
 
     else if (ch == KEY_RESIZE)
       action_resize_window();
+
+    events_consume(action_refresh);
   }
 }
