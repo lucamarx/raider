@@ -348,7 +348,6 @@ void events_consume(void (*on_update)(void)) {
 void events_unsubscribe(void) {
 #ifdef BSD_KQUEUE
   if (KQ_FD != -1) {
-    fprintf(stderr, "CLOSING KQ_FD\n");
     close(KQ_FD);
     KQ_FD = -1;
   }
