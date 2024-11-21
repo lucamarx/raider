@@ -236,6 +236,16 @@ void action_goto_path(const char* path) {
 }
 
 
+void action_goto_home(void) {
+  action_goto_path(getenv("HOME"));
+}
+
+
+void action_refresh(void) {
+  action_goto(CURRENT_DIR, ENTRIES[STATE->pos].name);
+}
+
+
 void action_up(bool update_preview) {
   if (STATE->pos == 0) return;
 

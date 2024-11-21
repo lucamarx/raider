@@ -102,8 +102,17 @@ void sort_dir(char order);
 // resize window callback
 void action_resize_window(void);
 
+// go to the specified directory and point to file
+void action_goto(const char* dir_part, const char* file_part);
+
 // go to the specified path
 void action_goto_path(const char* path);
+
+// go to home directory
+void action_goto_home(void);
+
+// refresh
+void action_refresh(void);
 
 // move the pointer up by 1
 void action_up(bool update_preview);

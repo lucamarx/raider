@@ -1,4 +1,5 @@
 #include "raider.h"
+#include "utils.h"
 
 #include <ncurses.h>
 #include <stdbool.h>
@@ -79,10 +80,10 @@ void event_loop(void) {
       break;
 
     else if (ch == 'r')
-      action_goto_path(CURRENT_DIR);
+      action_refresh();
 
     else if (ch == 'H')
-      action_goto_path(getenv("HOME"));
+      action_goto_home();
 
     else if (ch == KEY_UP || ch == 'k')
       action_up(ks.state == key_down || ks.state == key_up);
