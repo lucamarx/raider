@@ -4,6 +4,7 @@
 
 #include <ctype.h>
 #include <dirent.h>
+#include <fcntl.h>
 #include <ncurses.h>
 #include <stddef.h>
 #include <stdio.h>
@@ -277,4 +278,64 @@ void selection_remove_file(void) {
   snprintf(path, sizeof(path), "%s/.raider-sel-%i", getenv("HOME"), getpid());
 
   if (path_exists(path)) unlink(path);
+}
+
+
+void events_subscribe(const char* dir) {
+#ifdef BSD_KQUEUE
+  // subscribe to events in current directory
+  fprintf(stderr, "OPENING KQ_FD\n");
+  KQ_FD = open(dir, O_RDONLY);
+
+  if (KQ_FD != -1) {
+    fprintf(stderr, "EV_SET...\n");
+    EV_SET(&KQ_CHANGE, KQ_FD, EVFILT_VNODE,
+           EV_ADD | EV_CLEAR | EV_ONESHOT,
+           NOTE_WRITE | NOTE_DELETE | NOTE_RENAME | NOTE_REVOKE,
+           0, 0);
+  }
+#endif
+}
+
+
+void events_consume(void (*on_update)(void)) {
+#ifdef BSD_KQUEUE
+  // process events in current directory
+  if (KQ_FD != -1) {
+    struct kevent event;
+    struct timespec tout = { .tv_sec = 0, .tv_nsec = 1000*1000 };
+    int nev = kevent(KQ, &KQ_CHANGE, 1, &event, 1, &tout);
+
+    if (nev > 0) {
+      if (event.fflags & NOTE_WRITE) {
+        fprintf(stderr, "WRITE\n");
+        on_update();
+      }
+
+      /* else if (event.fflags & NOTE_DELETE) { */
+      /*   fprintf(stderr, "DELETE\n"); */
+      /*   action_backward(); */
+      /* } */
+
+      /* else if (event.fflags & NOTE_RENAME) */
+      /*   fprintf(stderr, "RENAME\n"); */
+
+      /* else if (event.fflags & NOTE_REVOKE) { */
+      /*   fprintf(stderr, "REVOKE\n"); */
+      /*   action_goto_path(getenv("HOME")); */
+      /* } */
+    }
+  } else fprintf(stderr, "KQ_FD=ZERO\n");
+#endif
+}
+
+
+void events_unsubscribe(void) {
+#ifdef BSD_KQUEUE
+  if (KQ_FD != -1) {
+    fprintf(stderr, "CLOSING KQ_FD\n");
+    close(KQ_FD);
+    KQ_FD = -1;
+  }
+#endif
 }

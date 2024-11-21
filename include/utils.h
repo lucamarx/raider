@@ -60,4 +60,13 @@ void selection_purge(void);
 
 // clear selection file
 void selection_remove_file(void);
+
+// subscribe to kernel events
+void events_subscribe(const char* dir);
+
+// consume kernel events
+void events_consume(void (*on_update)(void));
+
+// unsubscribe from kernel events
+void events_unsubscribe(void);
 #endif
