@@ -292,6 +292,10 @@ void events_subscribe(const char* dir) {
            NOTE_WRITE | NOTE_DELETE | NOTE_RENAME | NOTE_REVOKE,
            0, 0);
 #endif
+
+#ifdef LINUX_INOTIFY
+  IN_WD = inotify_add_watch(IN_FD, dir, IN_CREATE | IN_DELETE | IN_DELETE_SELF | IN_UNMOUNT);
+#endif
 }
 
 
@@ -321,6 +325,23 @@ void events_consume(void (*on_update)(void)) {
     }
   }
 #endif
+
+#ifdef LINUX_INOTIFY
+  char buf[IN_EVENT_BUF_LEN];
+  int nev = read(IN_FD, buf, IN_EVENT_BUF_LEN);
+
+  if (nev > 0) {
+    int i = 0;
+    while (i < nev) {
+      struct inotify_event *event = (struct inotify_event*) &buf[i];
+      if (event->len) {
+        if (event->mask & IN_CREATE)      on_update();
+        else if (event->mask & IN_DELETE) on_update();
+      }
+      i += IN_EVENT_SIZE + event->len;
+    }
+  }
+#endif
 }
 
 
@@ -331,5 +352,10 @@ void events_unsubscribe(void) {
     close(KQ_FD);
     KQ_FD = -1;
   }
+#endif
+
+#ifdef LINUX_INOTIFY
+  if (IN_WD != -1) inotify_rm_watch(IN_FD, IN_WD);
+  IN_WD = -1;
 #endif
 }
