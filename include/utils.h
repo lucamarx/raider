@@ -65,7 +65,7 @@ void selection_remove_file(void);
 void events_subscribe(const char* dir);
 
 // consume kernel events
-void events_consume(void (*on_update)(void));
+void events_consume(void (*on_dir_change)(void), void (*on_dir_unavailable)(void));
 
 // unsubscribe from kernel events
 void events_unsubscribe(void);

@@ -299,46 +299,38 @@ void events_subscribe(const char* dir) {
 }
 
 
-void events_consume(void (*on_update)(void)) {
+void events_consume(void (*on_dir_change)(void), void (*on_dir_unavailable)(void)) {
 #ifdef BSD_KQUEUE
-  // process events in current directory
   if (KQ_FD != -1) {
     struct kevent event;
     struct timespec tout = { .tv_sec = 0, .tv_nsec = 1000*1000 };
     int nev = kevent(KQ, &KQ_CHANGE, 1, &event, 1, &tout);
 
     if (nev > 0) {
-      if (event.fflags & NOTE_WRITE) on_update();
-
-      /* else if (event.fflags & NOTE_DELETE) { */
-      /*   fprintf(stderr, "DELETE\n"); */
-      /*   action_backward(); */
-      /* } */
-
-      /* else if (event.fflags & NOTE_RENAME) */
-      /*   fprintf(stderr, "RENAME\n"); */
-
-      /* else if (event.fflags & NOTE_REVOKE) { */
-      /*   fprintf(stderr, "REVOKE\n"); */
-      /*   action_goto_path(getenv("HOME")); */
-      /* } */
+      if      (event.fflags & NOTE_WRITE)  on_dir_change();
+      else if (event.fflags & NOTE_DELETE) on_dir_unavailable();
+      else if (event.fflags & NOTE_REVOKE) on_dir_unavailable();
     }
   }
 #endif
 
 #ifdef LINUX_INOTIFY
-  char buf[IN_EVENT_BUF_LEN];
-  int nev = read(IN_FD, buf, IN_EVENT_BUF_LEN);
+  if (IN_FD != -1) {
+    char buf[IN_EVENT_BUF_LEN];
+    int nev = read(IN_FD, buf, IN_EVENT_BUF_LEN);
 
-  if (nev > 0) {
-    int i = 0;
-    while (i < nev) {
-      struct inotify_event *event = (struct inotify_event*) &buf[i];
-      if (event->len) {
-        if (event->mask & IN_CREATE)      on_update();
-        else if (event->mask & IN_DELETE) on_update();
+    if (nev > 0) {
+      int i = 0;
+      while (i < nev) {
+        struct inotify_event *event = (struct inotify_event*) &buf[i];
+        if (event->len) {
+          if      (event->mask & IN_CREATE)      on_dir_change();
+          else if (event->mask & IN_DELETE)      on_dir_change();
+          else if (event->mask & IN_UNMOUNT)     on_dir_unavailable();
+          else if (event->mask & IN_DELETE_SELF) on_dir_unavailable();
+        }
+        i += IN_EVENT_SIZE + event->len;
       }
-      i += IN_EVENT_SIZE + event->len;
     }
   }
 #endif
