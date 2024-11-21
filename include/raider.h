@@ -21,7 +21,7 @@
 #define IN_EVENT_BUF_LEN (1024 * (IN_EVENT_SIZE + 16))
 #endif
 
-#define RAIDER_VERSION "0.4.1"
+#define RAIDER_VERSION "0.5.1"
 
 // color pairs
 #define PAIR_DEFAULT       1
