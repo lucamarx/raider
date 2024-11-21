@@ -284,16 +284,13 @@ void selection_remove_file(void) {
 void events_subscribe(const char* dir) {
 #ifdef BSD_KQUEUE
   // subscribe to events in current directory
-  fprintf(stderr, "OPENING KQ_FD\n");
   KQ_FD = open(dir, O_RDONLY);
 
-  if (KQ_FD != -1) {
-    fprintf(stderr, "EV_SET...\n");
+  if (KQ_FD != -1)
     EV_SET(&KQ_CHANGE, KQ_FD, EVFILT_VNODE,
            EV_ADD | EV_CLEAR | EV_ONESHOT,
            NOTE_WRITE | NOTE_DELETE | NOTE_RENAME | NOTE_REVOKE,
            0, 0);
-  }
 #endif
 }
 
@@ -307,10 +304,7 @@ void events_consume(void (*on_update)(void)) {
     int nev = kevent(KQ, &KQ_CHANGE, 1, &event, 1, &tout);
 
     if (nev > 0) {
-      if (event.fflags & NOTE_WRITE) {
-        fprintf(stderr, "WRITE\n");
-        on_update();
-      }
+      if (event.fflags & NOTE_WRITE) on_update();
 
       /* else if (event.fflags & NOTE_DELETE) { */
       /*   fprintf(stderr, "DELETE\n"); */
@@ -325,7 +319,7 @@ void events_consume(void (*on_update)(void)) {
       /*   action_goto_path(getenv("HOME")); */
       /* } */
     }
-  } else fprintf(stderr, "KQ_FD=ZERO\n");
+  }
 #endif
 }
 
