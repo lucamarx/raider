@@ -20,13 +20,16 @@ int list_dir(const char* path) {
     N++;
   }
 
-  if (N == 0) return N;
+  if (N == 0) {
+    closedir(dir);
+    return N;
+  }
 
   if (ENTRIES != NULL) free(ENTRIES);
 
   ENTRIES = calloc(N, sizeof(Entry));
 
-  seekdir(dir, 0);
+  rewinddir(dir);
 
   int n = 0;
   char file_name[FILENAME_MAX+1];
