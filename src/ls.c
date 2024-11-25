@@ -32,7 +32,7 @@ int list_dir(const char* path) {
   rewinddir(dir);
 
   int n = 0;
-  char file_name[FILENAME_MAX+1];
+  char file_name[PATH_MAX];
   while ((dir_entry = readdir(dir)) != NULL) {
     if (dir_entry->d_name[0] == '.') continue;
 

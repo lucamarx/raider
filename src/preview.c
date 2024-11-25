@@ -19,7 +19,7 @@ const char FILE_TYPES[file_type_num][10] = {"unknown", "text", "document", "imag
 const char W3MIMAGEDISPLAY_LOCATIONS[5][64] = {"/usr/lib/w3m/w3mimgdisplay", "/usr/libexec/w3m/w3mimgdisplay", "/usr/lib64/w3m/w3mimgdisplay", "/usr/libexec64/w3m/w3mimgdisplay", "/usr/local/libexec/w3m/w3mimgdisplay"};
 
 bool PREVIEW_NEEDS_CLEARING = false;
-char WAIT_CACHE[FILENAME_MAX+1] = "";
+char WAIT_CACHE[PATH_MAX] = "";
 
 
 static
@@ -77,7 +77,7 @@ void preview_clear_x11(const void* preview, WINDOW* win) {
   int max_w = ((const Preview*) preview)->x_width/2;
   int max_h = ((const Preview*) preview)->x_height;
 
-  char cmd[FILENAME_MAX+64];
+  char cmd[PATH_MAX+64];
   snprintf(cmd, sizeof(cmd),
            "echo -e '6;%i;%i;%i;%i;\n4;\n3;\n' | %s 2>&1 > /dev/null",
            x, y, max_w, max_h, ((const Preview*) preview)->w3mimgdisplay_path);
@@ -130,10 +130,10 @@ void preview_display_x11(const void* preview, WINDOW* win, const char* path) {
   int max_w = ((const Preview*) preview)->x_width/2 - 200;
   int max_h = ((const Preview*) preview)->x_height - y;
 
-  char esc_path[FILENAME_MAX+1];
+  char esc_path[PATH_MAX];
   escape_quote(sizeof(esc_path), esc_path, path);
 
-  char cmd[2*FILENAME_MAX+256];
+  char cmd[2*PATH_MAX+256];
   snprintf(cmd, sizeof(cmd), "echo -e '5;%s' | %s", esc_path, ((const Preview*) preview)->w3mimgdisplay_path);
 
   FILE* p;
@@ -170,10 +170,10 @@ void preview_display_chafa(const void* preview __attribute__((unused)), WINDOW* 
   int lines, cols;
   getmaxyx(win, lines, cols);
 
-  char esc_path[FILENAME_MAX+1];
+  char esc_path[PATH_MAX];
   escape_quote(sizeof(esc_path), esc_path, path);
 
-  char cmd[FILENAME_MAX+64];
+  char cmd[PATH_MAX+64];
   snprintf(cmd, sizeof(cmd), "2>/dev/null chafa --view-size %ix%i '%s'", cols/2, lines/2, esc_path);
 
   display_command_output(win, cmd, true);
@@ -209,7 +209,7 @@ void preview_text_file(const void* preview, WINDOW* win, const Entry* entry) {
   int lines, cols;
   getmaxyx(win, lines, cols);
 
-  char path[FILENAME_MAX+1];
+  char path[PATH_MAX];
   int res = path_get_full(path, entry, false);
 
   if (res < 0) {
@@ -237,7 +237,7 @@ void previewer_info(const void* preview __attribute__((unused)), WINDOW* win, co
 
 
 void previewer_image(const void* preview, WINDOW* win, const Entry* entry) {
-  char path[FILENAME_MAX+1];
+  char path[PATH_MAX];
   int res = path_get_full(path, entry, false);
 
   ((Preview*) preview)->preview_clear(preview, win);
@@ -250,7 +250,7 @@ void previewer_image(const void* preview, WINDOW* win, const Entry* entry) {
 
 
 void previewer_video_text(const void* preview, WINDOW* win, const Entry* entry) {
-  char path[FILENAME_MAX+1];
+  char path[PATH_MAX];
   int res = path_get_full(path, entry, true);
 
   if (res < 0) {
@@ -262,7 +262,7 @@ void previewer_video_text(const void* preview, WINDOW* win, const Entry* entry) 
   char opt[1024];
   snprintf(opt, sizeof(opt), "General;Title:     %%Movie%%\\nType:      %%ContentType%%\\nGenre:     %%Genre%%\\nPerformer: %%Performer%%\\n\\nFormat:    %%Format%%\\nSize:      %%FileSize/String%%\\nDuration:  %%Duration/String%%\\nBit Rate:  %%OverallBitRate/String%%\\n");
 
-  char cmd[FILENAME_MAX+1024+64];
+  char cmd[PATH_MAX+1024+64];
   snprintf(cmd, sizeof(cmd), "2>/dev/null mediainfo --Output='%s' '%s'", opt, path);
 
   if (display_command_output(win, cmd, false) != 0) preview_file_info(win, entry);
@@ -270,7 +270,7 @@ void previewer_video_text(const void* preview, WINDOW* win, const Entry* entry) 
 
 
 void previewer_document_text(const void* preview, WINDOW* win, const Entry* entry) {
-  char path[FILENAME_MAX+1];
+  char path[PATH_MAX];
   int res = path_get_full(path, entry, true);
 
   if (res < 0) {
@@ -279,16 +279,14 @@ void previewer_document_text(const void* preview, WINDOW* win, const Entry* entr
     return;
   }
 
-  char cmd[FILENAME_MAX+64];
-
   if (strcmp(entry->ext, "pdf") == 0 &&  ((const Preview*) preview)->has_pdftotext) {
-    // text preview
+    char cmd[PATH_MAX+64];
     snprintf(cmd, sizeof(cmd), "2>/dev/null pdftotext -f 0 -l 0  '%s' -", path);
 
     if (display_command_output(win, cmd, false) != 0) preview_file_info(win, entry);
   }
   else if (strcmp(entry->ext, "djvu") == 0 && ((const Preview*) preview)->has_djvutxt) {
-    // text preview
+    char cmd[PATH_MAX+64];
     snprintf(cmd, sizeof(cmd), "2>/dev/null djvutxt --page=0 '%s'", path);
 
     if (display_command_output(win, cmd, false) != 0) preview_file_info(win, entry);
@@ -298,10 +296,10 @@ void previewer_document_text(const void* preview, WINDOW* win, const Entry* entr
 
 
 void thumbnailer_video(const void* preview __attribute__((unused)), const char* path, const char* cache_path) {
-  char esc_path[FILENAME_MAX+1];
+  char esc_path[PATH_MAX];
   escape_quote(sizeof(esc_path), esc_path, path);
 
-  char cmd[2*FILENAME_MAX+128];
+  char cmd[2*PATH_MAX+128];
   snprintf(cmd, sizeof(cmd),
            "(2>/dev/null 1>&2 ffmpegthumbnailer -i '%s' -s 0 -q 2 -o %s && kill -HUP %i) &",
            esc_path, cache_path, getpid());
@@ -311,10 +309,10 @@ void thumbnailer_video(const void* preview __attribute__((unused)), const char* 
 
 
 void thumbnailer_document(const void* preview __attribute__((unused)), const char* path, const char* cache_path) {
-  char esc_path[FILENAME_MAX+1];
+  char esc_path[PATH_MAX];
   escape_quote(sizeof(esc_path), esc_path, path);
 
-  char cmd[2*FILENAME_MAX+128];
+  char cmd[2*PATH_MAX+128];
   snprintf(cmd, sizeof(cmd),
            "(2>/dev/null 1>&2 convert -density 120 '%s[0]' -quality 80 %s && kill -HUP %i) &",
            esc_path, cache_path, getpid());
@@ -324,10 +322,10 @@ void thumbnailer_document(const void* preview __attribute__((unused)), const cha
 
 
 void thumbnailer_image_sixel(const void* preview __attribute__((unused)), const char* path, const char* cache_path) {
-  char esc_path[FILENAME_MAX+1];
+  char esc_path[PATH_MAX];
   escape_quote(sizeof(esc_path), esc_path, path);
 
-  char cmd[2*FILENAME_MAX+128];
+  char cmd[2*PATH_MAX+128];
   snprintf(cmd, sizeof(cmd),
            "(2>/dev/null img2sixel '%s' -q low -w 400 -o %s && kill -HUP %i) &",
            esc_path, cache_path, getpid());
@@ -337,10 +335,10 @@ void thumbnailer_image_sixel(const void* preview __attribute__((unused)), const 
 
 
 void thumbnailer_video_sixel(const void* preview __attribute__((unused)), const char* path, const char* cache_path) {
-  char esc_path[FILENAME_MAX+1];
+  char esc_path[PATH_MAX];
   escape_quote(sizeof(esc_path), esc_path, path);
 
-  char cmd[4*FILENAME_MAX+128];
+  char cmd[4*PATH_MAX+128];
   snprintf(cmd, sizeof(cmd),
            "(2>/dev/null 1>&2 ffmpegthumbnailer -i '%s' -s 0 -q 2 -o %s.jpg && 2>/dev/null img2sixel %s.jpg -q low -w 400 -o %s && kill -HUP %i) &",
            esc_path, cache_path, cache_path, cache_path, getpid());
@@ -350,10 +348,10 @@ void thumbnailer_video_sixel(const void* preview __attribute__((unused)), const 
 
 
 void thumbnailer_document_sixel(const void* preview __attribute__((unused)), const char* path, const char* cache_path) {
-  char esc_path[FILENAME_MAX+1];
+  char esc_path[PATH_MAX];
   escape_quote(sizeof(esc_path), esc_path, path);
 
-  char cmd[4*FILENAME_MAX+128];
+  char cmd[4*PATH_MAX+128];
   snprintf(cmd, sizeof(cmd),
            "(2>/dev/null 1>&2 convert -density 120 '%s[0]' -quality 80 %s.jpg && 2>/dev/null img2sixel %s.jpg -q low -w 400 -o %s && kill -HUP %i) &",
            esc_path, cache_path, cache_path, cache_path, getpid());
@@ -364,7 +362,7 @@ void thumbnailer_document_sixel(const void* preview __attribute__((unused)), con
 
 void preview_init(Preview* preview) {
   // create cache directory
-  char buf[FILENAME_MAX+1];
+  char buf[PATH_MAX];
   snprintf(buf, sizeof(buf), "%s/.cache/raider", getenv("HOME"));
   mkdir(buf, S_IRWXU|S_IXUSR);
 
@@ -503,7 +501,7 @@ void preview_file(const Preview* preview, WINDOW* win, const Entry* entry) {
   if (preview->thumbnailer[entry->type] != NULL) {
     preview_file_info(win, entry);
 
-    char cache_path[FILENAME_MAX+1];
+    char cache_path[PATH_MAX];
     snprintf(cache_path,
              sizeof(cache_path),
              "%s/.cache/raider/%i-%llu.%s",
@@ -520,7 +518,7 @@ void preview_file(const Preview* preview, WINDOW* win, const Entry* entry) {
     else {
       strlcpy(WAIT_CACHE, cache_path, sizeof(WAIT_CACHE));
 
-      char path[FILENAME_MAX+1];
+      char path[PATH_MAX];
       int res = path_get_full(path, entry, false);
 
       if (res == 0)
@@ -539,7 +537,7 @@ void preview_file(const Preview* preview, WINDOW* win, const Entry* entry) {
 
 
 void preview_directory(const Preview* preview, WINDOW* win, const Entry* dir_entry) {
-  char dir_path[FILENAME_MAX+1];
+  char dir_path[PATH_MAX];
   int res = path_get_full(dir_path, dir_entry, false);
 
   if (res < 0) {
@@ -594,8 +592,8 @@ void preview_file_info(WINDOW* win, const Entry* entry) {
   if (entry->is_link) {
     mvwprintw(win, 0, 1, "  Link: %s", entry->name);
 
-    char file_path[FILENAME_MAX+1];
-    char link_path[FILENAME_MAX+1];
+    char file_path[PATH_MAX];
+    char link_path[PATH_MAX];
     if (path_get_full(file_path, entry, false) == 0) {
       size_t l = readlink(file_path, link_path, sizeof(link_path));
       link_path[l] = '\0';

@@ -5,6 +5,7 @@
 
 #include <dirent.h>
 #include <ncurses.h>
+#include <limits.h>
 #include <sys/stat.h>
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
@@ -47,7 +48,7 @@ typedef enum { unknown, text, document, image, video, archive, file_type_num } F
 
 // file description
 typedef struct {
-  char        name[MAXNAMLEN+1]; // file name
+  char        name[NAME_MAX+1];  // file name
   char        ext[10];           // extension
   FileType    type;              // content type (guessed from extension)
   struct stat info;              // file info
@@ -215,7 +216,7 @@ extern BTNode*  SELECTION;
 
 extern char     USER[256];
 extern char     HOST[256];
-extern char     CURRENT_DIR[FILENAME_MAX+1];
+extern char     CURRENT_DIR[PATH_MAX];
 
 #ifdef BSD_KQUEUE
   extern int           KQ;

@@ -23,7 +23,7 @@ BTNode*  SELECTION = NULL;
 
 char     HOST[256] = "";
 char     USER[256] = "";
-char     CURRENT_DIR[FILENAME_MAX+1] = "";
+char     CURRENT_DIR[PATH_MAX] = "";
 
 #ifdef BSD_KQUEUE
 int           KQ;
@@ -127,7 +127,7 @@ int main(int argc, char* argv[]) {
   setlocale(LC_ALL, "");
 
   char preview_mode[8] = "none";
-  char start_path[FILENAME_MAX+1] = "";
+  char start_path[PATH_MAX] = "";
 
   PREVIEW = (Preview*) malloc(sizeof(Preview));
   preview_init(PREVIEW);
@@ -148,7 +148,7 @@ int main(int argc, char* argv[]) {
       if (optarg[0] == '/')
         strlcpy(start_path, optarg, sizeof(start_path));
       else {
-        char cwd[FILENAME_MAX+1];
+        char cwd[PATH_MAX];
         if (getcwd(cwd, sizeof(cwd)) == NULL) {
           fprintf(stderr, "cannot get current directory\n");
           return EXIT_FAILURE;

@@ -215,8 +215,8 @@ void action_goto(const char* dir_part, const char* file_part) {
 
 
 void action_goto_path(const char* path) {
-  char dir_part[FILENAME_MAX+1];
-  char file_part[MAXNAMLEN+1];
+  char dir_part[PATH_MAX];
+  char file_part[NAME_MAX+1];
 
   int res = path_split_parts(dir_part, file_part, path);
 
@@ -326,7 +326,7 @@ void action_end(void) {
 
 void action_forward(void) {
   const Entry* current = &ENTRIES[STATE->pos];
-  char path[FILENAME_MAX+1];
+  char path[PATH_MAX];
 
   if (S_ISDIR(current->info.st_mode)) {
     // change directory
@@ -352,7 +352,7 @@ void action_forward(void) {
 
 
 void action_backward(void) {
-  char path[FILENAME_MAX+1];
+  char path[PATH_MAX];
   char* rest;
   strlcpy(path, CURRENT_DIR, sizeof(path));
 
@@ -368,7 +368,7 @@ void action_backward(void) {
 
 
 void action_reorder(const char order) {
-  char current_file_name[MAXNAMLEN+1];
+  char current_file_name[NAME_MAX+1];
 
   if (order == STATE->order) return;
 
@@ -398,7 +398,7 @@ void action_select(void){
 
   if (!btree_has_key(SELECTION, k)) {
     // select
-    char* path = (char*) malloc(sizeof(char)*(FILENAME_MAX+1));
+    char* path = (char*) malloc(sizeof(char)*(PATH_MAX));
     int res = path_get_full(path, current, false);
 
     if (res == 0)
@@ -451,10 +451,10 @@ void action_open_editor(void) {
       suspend_exec_resume(CURRENT_DIR, "vim .", "cannot open editor here");
   }
   else if (S_ISREG(current->info.st_mode) && current->info.st_mode & S_IRUSR && current->type == text) {
-    char path[MAXNAMLEN+1];
+    char path[NAME_MAX+1];
     escape_quote(sizeof(path), path, current->name);
 
-    char cmd[MAXNAMLEN+128] = "";
+    char cmd[NAME_MAX+32] = "";
 
     if (CONFIG->has_emacsclient)
       snprintf(cmd, sizeof(cmd), "emacsclient -nw '%s'", path);
@@ -477,8 +477,8 @@ void action_fzf_search(void) {
   endwin();
 
   FILE* p;
-  char path[FILENAME_MAX+1];
-  char full_path[FILENAME_MAX+1];
+  char path[PATH_MAX];
+  char full_path[PATH_MAX];
   if (chdir(CURRENT_DIR) == 0 && (p = popen(cmd, "r")) != NULL) {
     fgetline(sizeof(path), path, p);
     pclose(p);

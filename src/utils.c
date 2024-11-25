@@ -73,7 +73,7 @@ int path_split_parts(char* dir_part, char* file_part, const char* path) {
 
   if (S_ISDIR(info.st_mode)) {
     // path is a directory
-    strlcpy(dir_part, path, FILENAME_MAX+1);
+    strlcpy(dir_part, path, PATH_MAX);
 
     // remove last /
     if (strlen(dir_part) > 1 && path[strlen(dir_part)-1] == '/')
@@ -83,11 +83,11 @@ int path_split_parts(char* dir_part, char* file_part, const char* path) {
   }
   else if (S_ISREG(info.st_mode)) {
     // path is file
-    strlcpy(dir_part, path, FILENAME_MAX+1);
+    strlcpy(dir_part, path, PATH_MAX);
 
     for (size_t i = strlen(dir_part); i > 0; i--) {
       if (dir_part[i-1] == '/') {
-        strlcpy(file_part, dir_part+i, MAXNAMLEN+1);
+        strlcpy(file_part, dir_part+i, NAME_MAX+1);
         dir_part[i == 1 ? 1 : i-1] = '\0';
         break;
       }
@@ -99,7 +99,7 @@ int path_split_parts(char* dir_part, char* file_part, const char* path) {
 
 
 int path_get_full(char* path, const Entry* file_entry, bool escape) {
-  char buf[FILENAME_MAX+1];
+  char buf[PATH_MAX];
 
   if (strlen(CURRENT_DIR) == 1)
     snprintf(buf, sizeof(buf), "/%s", file_entry->name);
@@ -108,22 +108,22 @@ int path_get_full(char* path, const Entry* file_entry, bool escape) {
 
   bool exists = path_exists(buf);
 
-  if (escape) escape_quote(FILENAME_MAX+1, path, buf);
-  else strlcpy(path, buf, FILENAME_MAX+1);
+  if (escape) escape_quote(PATH_MAX, path, buf);
+  else strlcpy(path, buf, PATH_MAX);
 
   return exists ? 0 : PATH_DOES_NOT_EXISTS;
 }
 
 
 void get_mime_type(size_t mimesz, char mime[mimesz], const Entry* file_entry) {
-  char path[FILENAME_MAX+1];
+  char path[PATH_MAX];
   int res = path_get_full(path, file_entry, true);
 
   mime[0] = '\0';
 
   if (res < 0) return;
 
-  char cmd[FILENAME_MAX+64];
+  char cmd[PATH_MAX+32];
   snprintf(cmd, sizeof(cmd), "file -i -b '%s'", path);
 
   FILE* p;
@@ -226,8 +226,8 @@ void get_time_line(size_t timesz, char time[timesz], const time_t t) {
 
 
 void update_titlebar(void) {
-  char dir[FILENAME_MAX+1];
-  char cmd[FILENAME_MAX+64];
+  char dir[PATH_MAX];
+  char cmd[PATH_MAX+64];
 
   escape_quote(sizeof(dir), dir, CURRENT_DIR);
 
@@ -245,7 +245,7 @@ void* write_selected(BTKey k __attribute__((unused)), void* val, void* ctx) {
 
 
 void selection_save(void) {
-  char path[FILENAME_MAX+1];
+  char path[PATH_MAX];
   snprintf(path, sizeof(path), "%s/.raider-sel-%i", getenv("HOME"), getpid());
 
   FILE* f = fopen(path, "w");
@@ -274,7 +274,7 @@ void selection_purge(void) {
 }
 
 void selection_remove_file(void) {
-  char path[FILENAME_MAX+1];
+  char path[PATH_MAX];
   snprintf(path, sizeof(path), "%s/.raider-sel-%i", getenv("HOME"), getpid());
 
   if (path_exists(path)) unlink(path);
