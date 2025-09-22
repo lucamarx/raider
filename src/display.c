@@ -29,7 +29,6 @@
 #include "utils.h"
 
 #include <grp.h>
-#include <ncurses.h>
 #include <pwd.h>
 #include <string.h>
 #include <sys/stat.h>

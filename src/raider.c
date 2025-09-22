@@ -28,7 +28,6 @@
 #include "utils.h"
 
 #include <locale.h>
-#include <ncurses.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>

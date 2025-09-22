@@ -28,7 +28,6 @@
 #include "utils.h"
 
 #include <grp.h>
-#include <ncurses.h>
 #include <pwd.h>
 #include <stdio.h>
 #include <stdlib.h>

@@ -27,7 +27,6 @@
 #include "raider.h"
 #include "utils.h"
 
-#include <ncurses.h>
 #include <stdbool.h>
 #include <stdlib.h>
 

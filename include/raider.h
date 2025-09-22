@@ -30,9 +30,14 @@
 #include "btree.h"
 
 #include <dirent.h>
-#include <ncurses.h>
 #include <limits.h>
 #include <sys/stat.h>
+
+#if defined(__NetBSD__)
+#include <curses.h>
+#else
+#include <ncurses.h>
+#endif
 
 #if defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__NetBSD__) || defined(__APPLE__)
 #include <sys/types.h>
