@@ -41,7 +41,7 @@
 
 const char FILE_TYPES[file_type_num][10] = {"unknown", "text", "document", "image", "video", "archive"};
 
-const char W3MIMAGEDISPLAY_LOCATIONS[5][64] = {"/usr/lib/w3m/w3mimgdisplay", "/usr/libexec/w3m/w3mimgdisplay", "/usr/lib64/w3m/w3mimgdisplay", "/usr/libexec64/w3m/w3mimgdisplay", "/usr/local/libexec/w3m/w3mimgdisplay"};
+const char W3MIMAGEDISPLAY_LOCATIONS[6][64] = {"/usr/lib/w3m/w3mimgdisplay", "/usr/libexec/w3m/w3mimgdisplay", "/usr/lib64/w3m/w3mimgdisplay", "/usr/libexec64/w3m/w3mimgdisplay", "/usr/local/libexec/w3m/w3mimgdisplay", "/usr/pkg/libexec/w3m/w3mimgdisplay"};
 
 bool PREVIEW_NEEDS_CLEARING = false;
 char WAIT_CACHE[PATH_MAX] = "";
@@ -408,7 +408,7 @@ void preview_init(Preview* preview) {
 
   preview->has_w3mimgdisplay = false;
 
-  for (int i=0; i<5; i++)
+  for (int i=0; i<6; i++)
     if (path_exists(W3MIMAGEDISPLAY_LOCATIONS[i])) {
       preview->has_w3mimgdisplay = true;
       strlcpy(preview->w3mimgdisplay_path, W3MIMAGEDISPLAY_LOCATIONS[i], sizeof(preview->w3mimgdisplay_path));
