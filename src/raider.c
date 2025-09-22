@@ -72,16 +72,17 @@ void init_curses(void) {
   nodelay(stdscr, TRUE);
   timeout(100);
 
+  use_default_colors();
   start_color();
 
-  init_pair(PAIR_DEFAULT,       COLOR_WHITE,   COLOR_BLACK);
-  init_pair(PAIR_RED_BLACK,     COLOR_RED,     COLOR_BLACK);
-  init_pair(PAIR_BLUE_BLACK,    COLOR_BLUE,    COLOR_BLACK);
-  init_pair(PAIR_CYAN_BLACK,    COLOR_CYAN,    COLOR_BLACK);
-  init_pair(PAIR_GREEN_BLACK,   COLOR_GREEN,   COLOR_BLACK);
-  init_pair(PAIR_YELLOW_BLACK,  COLOR_YELLOW,  COLOR_BLACK);
+  init_pair(PAIR_DEFAULT,       COLOR_WHITE,   -1);
+  init_pair(PAIR_RED_BLACK,     COLOR_RED,     -1);
+  init_pair(PAIR_BLUE_BLACK,    COLOR_BLUE,    -1);
+  init_pair(PAIR_CYAN_BLACK,    COLOR_CYAN,    -1);
+  init_pair(PAIR_GREEN_BLACK,   COLOR_GREEN,   -1);
+  init_pair(PAIR_YELLOW_BLACK,  COLOR_YELLOW,  -1);
   init_pair(PAIR_BLACK_YELLOW,  COLOR_BLACK,   COLOR_YELLOW);
-  init_pair(PAIR_MAGENTA_BLACK, COLOR_MAGENTA, COLOR_BLACK);
+  init_pair(PAIR_MAGENTA_BLACK, COLOR_MAGENTA, -1);
 
   getmaxyx(stdscr, LINES, COLS); // is it necessary?
 
